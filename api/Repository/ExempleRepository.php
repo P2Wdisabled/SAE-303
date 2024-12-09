@@ -4,7 +4,7 @@ require_once("Class/Exemple.php");
 
 /**
  * Classe ExempleRepository
- * Gère les opérations CRUD pour les produits.
+ * Gère les opérations CRUD pour les exemples.
  */
 class ExempleRepository extends EntityRepository {
 
@@ -16,25 +16,23 @@ class ExempleRepository extends EntityRepository {
         $stmt = $this->cnx->prepare("SELECT * FROM exemples WHERE id = :id");
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
-        $prod = $stmt->fetch(PDO::FETCH_ASSOC);
+        $ex = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if (!$prod) return null;
+        if (!$ex) return null;
 
-        $Exemple = new Exemple($prod['id']);
-        $Exemple->setName($prod['name']);
+        $Exemple = new Exemple($ex['id']);
 
         return $Exemple;
     }
 
     public function findAll(): array {
-        $stmt = $this->cnx->prepare("SELECT * FROM exemples");
+        $stmt = $this->cnx->prepare("SELECT * FROM Customers");
         $stmt->execute();
         $exemples = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         $res = [];
-        foreach ($exemples as $prod) {
-            $Exemple = new Exemple($prod['id']);
-            $Exemple->setName($prod['name']);
+        foreach ($exemples as $ex) {
+            $Exemple = new Exemple($ex['id']);
             $res[] = $Exemple;
         }
         return $res;

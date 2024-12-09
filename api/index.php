@@ -1,5 +1,6 @@
 <?php
 require_once "Class/HttpRequest.php";
+require_once "Controller/ExempleController.php";
 
 
 /** IMPORTANT
@@ -24,7 +25,7 @@ require_once "Class/HttpRequest.php";
  *  On ajoutera des "routes" à $router si l'on a d'autres ressource à traiter.
  */
 $router = [
-    
+    "exemple" => new ExempleController()
 ];
 
 // objet HttpRequest qui contient toutes les infos utiles sur la requêtes (voir class/HttpRequest.php)

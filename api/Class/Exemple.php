@@ -14,22 +14,12 @@ class Exemple implements JsonSerializable {
     public function getId(): int {
         return $this->id;
     }
-    
-    public function getName(): string {
-        return $this->name;
-    }
-    
-    public function setName(string $name): void {
-        $this->name = $name;
-    }
-
     /**
      * Définition de la manière dont un produit est converti en JSON.
      */
     public function jsonSerialize(): mixed {
         return [
-            "id" => $this->id,
-            "name" => $this->name,
+            "id" => $this->id
         ];
     }
 }
