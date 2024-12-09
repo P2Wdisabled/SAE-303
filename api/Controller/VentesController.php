@@ -1,30 +1,30 @@
 <?php
 require_once "Controller.php";
-require_once "Repository/ExempleRepository.php";
+require_once "Repository/VentesRepository.php";
 
 /**
  * Classe ExempleController
  * Gère les requêtes REST pour les produits.
  */
-class ExempleController extends Controller {
+class VentesController extends Controller {
 
-    private ExempleRepository $exemples;
+    private VentesRepository $ventes;
 
     public function __construct(){
-        $this->exemples = new ExempleRepository();
+        $this->ventes = new VentesRepository();
     }
 
     protected function processGetRequest(HttpRequest $request) {
         $id = $request->getId();
 
         if ($id){
-            // URI est .../exemples/{id}
-            $p = $this->exemples->find($id);
+            // URI est .../ventes/{id}
+            $p = $this->ventes->find($id);
             return $p == null ? false : $p;
         }
         else{
-            // URI est .../exemples
-            return $this->exemples->findAll();
+            // URI est .../ventes
+            return $this->ventes->findAll();
         }
     }
 

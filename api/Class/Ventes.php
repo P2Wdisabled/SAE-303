@@ -3,7 +3,7 @@
  * Classe Exemple
  * Représente un produit avec les propriétés id, name, description, price, image_url.
  */
-class Exemple implements JsonSerializable {
+class Vente implements JsonSerializable {
     private int $id; // ID du produit
     private string $name; // Nom du produit
 
