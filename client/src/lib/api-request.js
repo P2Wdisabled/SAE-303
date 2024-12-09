@@ -4,7 +4,7 @@
  */
 
 
-let API_URL = "TO BE DEFINED"; // URL de base de l'API (à définir)
+let API_URL = "http://localhost/SAE-303/api/"; // URL de base de l'API (à définir)
 
 
 /**
