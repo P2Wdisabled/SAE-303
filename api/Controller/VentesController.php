@@ -15,15 +15,12 @@ class VentesController extends Controller {
     }
 
     protected function processGetRequest(HttpRequest $request) {
-        $id = $request->getId();
+        $param = $request->getParam("param");
 
-        if ($id){
-            // URI est .../ventes/{id}
-            $p = $this->ventes->find($id);
-            return $p == null ? false : $p;
+        if  ($param == "top3"){
+            return $this->ventes->mostUsed();
         }
-        else{
-            // URI est .../ventes
+        else if ($param == "lastmonth") {
             return $this->ventes->TotalLastmonth();
         }
     }

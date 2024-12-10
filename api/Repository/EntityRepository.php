@@ -30,7 +30,7 @@ abstract class EntityRepository {
      *  Query the data base for the entity with id $id.
      *  Must return an Entity object or false if the query fails
      */
-    abstract public function find($id);
+    abstract public function mostUsed();
 
     /**
      *  findAll

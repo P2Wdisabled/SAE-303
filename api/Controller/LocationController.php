@@ -15,20 +15,12 @@ class LocationController extends Controller {
     }
 
     protected function processGetRequest(HttpRequest $request) {
-        $id = $request->getId();
-        $param = $request->getParam("test");
+        $param = $request->getParam("param");
 
-        if ($id){
-            // URI est .../Location/{id}
-            $p = $this->location->find($id);
-            return $p == null ? false : $p;
+        if ($param == "top3") {
+            return $this->location->mostUsed();
         }
-        else if ($param){
-            // URI est .../Location?test=valeur
-            //return $this->location->filterByTest($param);
-        }
-        else{
-            // URI est .../Location
+        else if ($param == "lastmonth") {
             return $this->location->TotalLastmonth();
         }
     }
