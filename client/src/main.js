@@ -6,7 +6,11 @@ import { LocationsData } from "./data/locations.js";
 import './index.css';
 */
 
+
 let C = {};
+
+
+//Visualiser l’évolution des ventes et des locations sur les 6 derniers mois.
 
 C.init = async function(){
     V.init();
@@ -14,6 +18,9 @@ C.init = async function(){
     let ventes = await VentesData.fetchVentes();
     let toplocations = await LocationsData.fetchMostLocations();
     let topventes = await VentesData.fetchMostVentes();
+    let soldEvolutions = await VentesData.fetchSoldEvolutions();
+    let rentEvolutions = await LocationsData.fetchRentEvolutions();
+    V.renderEvolutions(soldEvolutions, rentEvolutions);
     V.renderToplocations(toplocations, topventes);
     V.renderPrices(ventes, location);
 }
@@ -25,31 +32,14 @@ let V = {
 V.init = function(){
     V.renderHeader();
 }
+
+
 V.renderPrices = function(ventes, location){
     document.querySelector("#ventesContainer").textContent = ventes+" €";
     document.querySelector("#locationContainer").textContent = location+" €";
 }
 
 V.renderToplocations = function(toplocations, topventes){
-    /*
-    [
-    {
-        "nb": 2,
-        "movie_id": 824,
-        "movie_title": "Neon Flesh (Carne de neón)"
-    },
-    {
-        "nb": 1,
-        "movie_id": 6,
-        "movie_title": "Bride Came C.O.D., The"
-    },
-    {
-        "nb": 1,
-        "movie_id": 112,
-        "movie_title": "Gentleman's Game, A"
-    }
-]
-    */
     let toplocationsContainer = document.querySelector("#toplocationsContainer");
     toplocationsContainer.innerHTML = "";
     toplocations.forEach(location => {
@@ -65,6 +55,82 @@ V.renderToplocations = function(toplocations, topventes){
         topventesContainer.appendChild(div);
     });
 }
+
+
+V.renderGraphLineChart = function(htmlId, data, type){
+    if(type == "location"){
+        var dom = document.getElementById(htmlId);
+        var myChart = echarts.init(dom, null, {
+          renderer: 'canvas',
+          useDirtyRect: false
+        });
+        var app = {};
+
+        var option;
+
+        option = {
+            xAxis: {
+                type: 'category',
+                data: data.map(e => e.mois)
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [
+                {
+                  data: data.map(e => e.location),
+                  type: 'line',
+                  smooth: true
+                }
+            ]
+        };
+
+        if (option && typeof option === 'object') {
+          myChart.setOption(option);
+        }
+
+        window.addEventListener('resize', myChart.resize);
+    }else if(type == "ventes"){
+        var dom = document.getElementById(htmlId);
+        var myChart = echarts.init(dom, null, {
+          renderer: 'canvas',
+          useDirtyRect: false
+        });
+        var app = {};
+
+        var option;
+
+        option = {
+            xAxis: {
+                type: 'category',
+                data: data.map(e => e.mois)
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [
+                {
+                  data: data.map(e => e.vente),
+                  type: 'line',
+                  smooth: true
+                }
+            ]
+        };
+
+        if (option && typeof option === 'object') {
+          myChart.setOption(option);
+        }
+
+        window.addEventListener('resize', myChart.resize);
+
+    }
+}
+V.renderEvolutions = function(soldEvolutions, rentEvolutions){
+// adapter le code au dessus pour afficher les données de soldEvolutions et rentEvolutions dans un graphique chacun pour Visualiser l’évolution des ventes et des locations sur les 6 derniers mois.
+    V.renderGraphLineChart("soldEvolutions", soldEvolutions, "ventes");
+    V.renderGraphLineChart("rentEvolutions", rentEvolutions, "location");
+}
+
 V.renderHeader= function(){
     V.header.innerHTML = HeaderView.render();
 }

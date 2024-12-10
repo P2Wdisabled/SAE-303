@@ -23,6 +23,9 @@ class VentesController extends Controller {
         else if ($param == "lastmonth") {
             return $this->ventes->TotalLastmonth();
         }
+        else if ($param == "evolution") {
+            return $this->ventes->evolution();
+        }
     }
 
     protected function processPostRequest(HttpRequest $request) {

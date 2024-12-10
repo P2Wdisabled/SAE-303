@@ -14,5 +14,9 @@ LocationsData.fetchMostLocations = async function(){
     return data; 
 }
 
+LocationsData.fetchRentEvolutions = async function(){
+    let data = await getRequest('location?param=evolution');
+    return data;
+}
 
 export {LocationsData};

@@ -45,7 +45,7 @@ abstract class EntityRepository {
      *  Update the Entity object with its data base id.
      *  Must return true or false if it fails to save the object.
      */
-    abstract public function save($entity);
+    abstract public function evolution();
 
     /**
      *  delete

@@ -13,5 +13,10 @@ VentesData.fetchMostVentes = async function(){
     return data; 
 }
 
+VentesData.fetchSoldEvolutions = async function(){
+    let data = await getRequest('ventes?param=evolution');
+    return data;
+}
+
 
 export {VentesData};

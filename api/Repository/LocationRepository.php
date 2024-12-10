@@ -31,7 +31,6 @@ class LocationRepository extends EntityRepository {
     }
 
     public function TotalLastmonth(): float {
-        //on récupère la somme des Location sur le mois en cours 
         $stmt = $this->cnx->prepare("SELECT rental_price FROM Rentals WHERE YEAR(rental_date) = :currentyear AND MONTH(rental_date) = :currentmonth");
         $currentYear = date('Y');
         $currentMonth = date('m');
@@ -44,7 +43,11 @@ class LocationRepository extends EntityRepository {
         return $totalLocation;
     }
 
-    public function save($Vente) {
+    public function evolution() {
+        $stmt = $this->cnx->prepare("SELECT SUM(rental_price) as location, MONTH(rental_date) as mois FROM Rentals GROUP BY MONTH(rental_date) ORDER BY MONTH(rental_date) DESC LIMIT 7");
+        $stmt->execute();
+        $evolution = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $evolution;
     }
 
     public function delete($id) {

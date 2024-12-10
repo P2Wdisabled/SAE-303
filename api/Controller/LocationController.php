@@ -23,6 +23,9 @@ class LocationController extends Controller {
         else if ($param == "lastmonth") {
             return $this->location->TotalLastmonth();
         }
+        else if ($param == "evolution") {
+            return $this->location->evolution();
+        }
     }
 
     protected function processPostRequest(HttpRequest $request) {

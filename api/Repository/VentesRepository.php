@@ -31,7 +31,6 @@ class VentesRepository extends EntityRepository {
     }
 
     public function TotalLastmonth(): float {
-        //on récupère la somme des ventes sur le mois en cours 
         $stmt = $this->cnx->prepare("SELECT purchase_price FROM Sales WHERE YEAR(purchase_date) = :currentyear AND MONTH(purchase_date) = :currentmonth");
         $currentYear = date('Y');
         $currentMonth = date('m');
@@ -44,7 +43,11 @@ class VentesRepository extends EntityRepository {
         return $totalVentes;
     }
 
-    public function save($Vente) {
+    public function evolution() {
+        $stmt = $this->cnx->prepare("SELECT SUM(purchase_price) as vente,  MONTH(purchase_date) as mois FROM Sales GROUP BY MONTH(purchase_date) ORDER BY MONTH(purchase_date) DESC LIMIT 7");
+        $stmt->execute();
+        $evolution = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $evolution;
     }
 
     public function delete($id) {
