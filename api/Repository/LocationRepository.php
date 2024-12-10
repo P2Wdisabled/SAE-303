@@ -15,11 +15,13 @@ class LocationRepository extends EntityRepository {
     public function find($id) {
     }
 
-    public function findAll(): float {
+    public function TotalLastmonth(): float {
         //on récupère la somme des Location sur le mois en cours 
-        $stmt = $this->cnx->prepare("SELECT rental_price FROM Rentals WHERE rental_date > :date");
-        $currentDate = date('Y-m-01');
-        $stmt->bindParam(':date', $currentDate, PDO::PARAM_STR);
+        $stmt = $this->cnx->prepare("SELECT rental_price FROM Rentals WHERE YEAR(rental_date) = :currentyear AND MONTH(rental_date) = :currentmonth");
+        $currentYear = date('Y');
+        $currentMonth = date('m');
+        $stmt->bindValue(':currentyear', $currentYear, PDO::PARAM_INT);
+        $stmt->bindValue(':currentmonth', $currentMonth, PDO::PARAM_INT);
         $stmt->execute();
         $location = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $totalLocation = array_sum(array_column($location, 'rental_price'));

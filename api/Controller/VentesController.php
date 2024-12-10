@@ -24,7 +24,7 @@ class VentesController extends Controller {
         }
         else{
             // URI est .../ventes
-            return $this->ventes->findAll();
+            return $this->ventes->TotalLastmonth();
         }
     }
 

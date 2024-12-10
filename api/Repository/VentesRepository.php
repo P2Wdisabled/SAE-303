@@ -15,11 +15,13 @@ class VentesRepository extends EntityRepository {
     public function find($id) {
     }
 
-    public function findAll(): float {
+    public function TotalLastmonth(): float {
         //on récupère la somme des ventes sur le mois en cours 
-        $stmt = $this->cnx->prepare("SELECT purchase_price FROM Sales WHERE purchase_date > :date");
-        $currentDate = date('Y-m-01');
-        $stmt->bindParam(':date', $currentDate, PDO::PARAM_STR);
+        $stmt = $this->cnx->prepare("SELECT purchase_price FROM Sales WHERE YEAR(purchase_date) = :currentyear AND MONTH(purchase_date) = :currentmonth");
+        $currentYear = date('Y');
+        $currentMonth = date('m');
+        $stmt->bindValue(':currentyear', $currentYear, PDO::PARAM_INT);
+        $stmt->bindValue(':currentmonth', $currentMonth, PDO::PARAM_INT);
         $stmt->execute();
         $ventes = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $totalVentes = array_sum(array_column($ventes, 'purchase_price'));

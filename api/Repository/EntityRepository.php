@@ -21,7 +21,8 @@ abstract class EntityRepository {
 
     protected function __construct(){
         // Modifiez ici vos informations de BDD et de connexion
-        $this->cnx = new PDO("mysql:host=54.37.68.129:3306;dbname=SAE303-VOD", "viewer", "Hhcfiy6A4(jMr3Yx");
+        $pswd = "Hhcfiy6A4(jMr3Yx";
+        $this->cnx = new PDO("mysql:host=54.37.68.129:3306;dbname=SAE303-VOD", "viewer", $pswd);
     }
 
     /**
@@ -36,7 +37,7 @@ abstract class EntityRepository {
      *  Query the data base for all the entities
      *  Must return an array of Entity objects or false if the query fails
      */
-    abstract public function findAll();
+    abstract public function TotalLastmonth();
 
     /**
      *  save
