@@ -50,7 +50,50 @@ class LocationRepository extends EntityRepository {
         return $evolution;
     }
 
-    public function delete($id) {
+    public function evolutionpergenre() {
+        $stmt = $this->cnx->prepare("
+    SELECT 
+        Movies.genre, 
+        COUNT(Rentals.rental_price) AS location, 
+        MONTH(Rentals.rental_date) AS mois 
+    FROM 
+        Rentals 
+    JOIN 
+        Movies 
+        ON Rentals.movie_id = Movies.id 
+    WHERE 
+        Rentals.rental_date >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
+    GROUP BY 
+        Movies.genre, 
+        MONTH(Rentals.rental_date)
+    ORDER BY 
+        Movies.genre ASC, 
+        mois ASC
+");
+$stmt->execute();
+$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Transformation des résultats pour correspondre à la structure souhaitée
+$evolution = [];
+foreach ($results as $row) {
+    $genre = $row['genre'];
+    if (!isset($evolution[$genre])) {
+        $evolution[$genre] = [
+            'genre' => $genre,
+            'evolution' => []
+        ];
+    }
+    $evolution[$genre]['evolution'][] = [
+        'mois' => (int)$row['mois'],
+        'location' => (float)$row['location']
+    ];
+}
+
+// Réindexer le tableau pour obtenir un array indexé numériquement
+$evolution = array_values($evolution);
+
+return $evolution;
+
     }
 
     public function update($Vente) {

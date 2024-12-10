@@ -9,8 +9,16 @@ import './index.css';
 
 let C = {};
 
+/*
 
-//Visualiser l’évolution des ventes et des locations sur les 6 derniers mois.
+        //Visualiser l’évolution des ventes et des locations par genre sur les 6 derniers mois. on va utiliser la table Movies pour récupérer le genre des films
+        $stmt = $this->cnx->prepare("SELECT SUM(rental_price) as location, MONTH(rental_date) as mois FROM Rentals GROUP BY MONTH(rental_date) ORDER BY MONTH(rental_date) DESC LIMIT :month");
+        $stmt->bindValue(':month', $month, PDO::PARAM_INT);
+        $stmt->execute();
+        $evolution = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $evolution;
+    }
+        */
 
 C.init = async function(){
     V.init();
@@ -20,6 +28,9 @@ C.init = async function(){
     let topventes = await VentesData.fetchMostVentes();
     let soldEvolutions = await VentesData.fetchSoldEvolutions();
     let rentEvolutions = await LocationsData.fetchRentEvolutions();
+    let rentEvolutionsPerGenre = await LocationsData.fetchRentEvolutionsPerGenre();
+    let soldEvolutionsPerGenres = await VentesData.fetchSoldEvolutionsPerGenre();
+    V.renderEvolutionsPerGenre(rentEvolutionsPerGenre, soldEvolutionsPerGenres);
     V.renderEvolutions(soldEvolutions, rentEvolutions);
     V.renderToplocations(toplocations, topventes);
     V.renderPrices(ventes, location);
@@ -131,6 +142,38 @@ V.renderEvolutions = function(soldEvolutions, rentEvolutions){
     V.renderGraphLineChart("rentEvolutions", rentEvolutions, "location");
 }
 
+
+V.renderEvolutionsPerGenre = function(rentEvolutionsPerGenre, soldEvolutionsPerGenre){
+    let html = document.querySelector('#iteration6Rent');
+    rentEvolutionsPerGenre.forEach(genre => {
+        let container = document.createElement("div");
+        container.style.height = "50vh";
+        container.id = genre["genre"]+"evolutionrent";
+        let type = document.createElement("h2");
+        type.textContent = genre["genre"];
+        html.appendChild(type);
+        html.appendChild(container);
+        html.appendChild(document.createElement("br"));
+        V.renderGraphLineChart(genre["genre"]+"evolutionrent", genre["evolution"], "location");
+    }
+    )
+
+    
+    html = document.querySelector('#iteration6Sold');
+    soldEvolutionsPerGenre.forEach(genre => {
+        let container = document.createElement("div");
+        container.style.height = "50vh";
+        container.id = genre["genre"]+"evolutionsold";
+        let type = document.createElement("h2");
+        type.textContent = genre["genre"];
+        html.appendChild(type);
+        html.appendChild(container);
+        html.appendChild(document.createElement("br"));
+        V.renderGraphLineChart(genre["genre"]+"evolutionsold", genre["evolution"], "location");
+    }
+    )
+
+}
 V.renderHeader= function(){
     V.header.innerHTML = HeaderView.render();
 }

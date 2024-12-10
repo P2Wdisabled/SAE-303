@@ -19,4 +19,9 @@ VentesData.fetchSoldEvolutions = async function(){
 }
 
 
+VentesData.fetchSoldEvolutionsPerGenre = async function(){
+let data = await getRequest('ventes?param=evolutionPerGenre');
+return data;
+}
+
 export {VentesData};

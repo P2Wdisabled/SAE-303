@@ -26,6 +26,9 @@ class VentesController extends Controller {
         else if ($param == "evolution") {
             return $this->ventes->evolution();
         }
+        else if ($param == "evolutionPerGenre") {
+            return $this->ventes->evolutionpergenre();
+        }
     }
 
     protected function processPostRequest(HttpRequest $request) {

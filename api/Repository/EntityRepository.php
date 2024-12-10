@@ -52,7 +52,7 @@ abstract class EntityRepository {
      *  delete in the data base Entity object with id $id
      *  Must return true or false if it fails to delete the object.
      */
-    abstract public function delete($id);
+    abstract public function evolutionpergenre();
 
      /**
      *  udpate

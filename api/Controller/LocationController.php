@@ -26,6 +26,9 @@ class LocationController extends Controller {
         else if ($param == "evolution") {
             return $this->location->evolution();
         }
+        else if ($param == "evolutionPerGenre") {
+            return $this->location->evolutionpergenre();
+        }
     }
 
     protected function processPostRequest(HttpRequest $request) {
