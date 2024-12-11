@@ -29,6 +29,9 @@ class VentesController extends Controller {
         else if ($param == "evolutionPerGenre") {
             return $this->ventes->evolutionpergenre();
         }
+        else if ($param == "UsesPerCountries") {
+            return $this->ventes->UsesPerCountries();
+        }
     }
 
     protected function processPostRequest(HttpRequest $request) {

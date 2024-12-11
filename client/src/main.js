@@ -9,17 +9,6 @@ import './index.css';
 
 let C = {};
 
-/*
-
-        //Visualiser l’évolution des ventes et des locations par genre sur les 6 derniers mois. on va utiliser la table Movies pour récupérer le genre des films
-        $stmt = $this->cnx->prepare("SELECT SUM(rental_price) as location, MONTH(rental_date) as mois FROM Rentals GROUP BY MONTH(rental_date) ORDER BY MONTH(rental_date) DESC LIMIT :month");
-        $stmt->bindValue(':month', $month, PDO::PARAM_INT);
-        $stmt->execute();
-        $evolution = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return $evolution;
-    }
-        */
-
 C.init = async function(){
     V.init();
     let location = await LocationsData.fetchLocations();
@@ -30,6 +19,10 @@ C.init = async function(){
     let rentEvolutions = await LocationsData.fetchRentEvolutions();
     let rentEvolutionsPerGenre = await LocationsData.fetchRentEvolutionsPerGenre();
     let soldEvolutionsPerGenres = await VentesData.fetchSoldEvolutionsPerGenre();
+    let rentUsesPerCountries = await LocationsData.fetchUsesPerCountries();
+    let SoldUsesPerCountries = await VentesData.fetchSoldUsesPerCountries();
+    V.renderAxisWithTicks("rentUsesPerCountries", rentUsesPerCountries);
+    V.renderAxisWithTicks("SoldUsesPerCountries", SoldUsesPerCountries);
     V.renderEvolutionsPerGenre(rentEvolutionsPerGenre, soldEvolutionsPerGenres);
     V.renderEvolutions(soldEvolutions, rentEvolutions);
     V.renderToplocations(toplocations, topventes);
@@ -67,6 +60,59 @@ V.renderToplocations = function(toplocations, topventes){
     });
 }
 
+V.renderAxisWithTicks = function(htmlId, data) {
+    var dom = document.querySelector("#"+htmlId);
+    var myChart = echarts.init(dom, null, {
+      renderer: 'canvas',
+      useDirtyRect: false
+    });
+    var app = {};
+    
+    var option;
+
+    option = {
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: {
+      type: 'shadow'
+    }
+  },
+  grid: {
+    left: '3%',
+    right: '4%',
+    bottom: '3%',
+    containLabel: true
+  },
+  xAxis: [
+    {
+      type: 'category',
+      data: data.map(e => e.country),
+      axisTick: {
+        alignWithLabel: true
+      }
+    }
+  ],
+  yAxis: [
+    {
+      type: 'value'
+    }
+  ],
+  series: [
+    {
+      name: 'Direct',
+      type: 'bar',
+      barWidth: '60%',
+      data: data.map(e => e.value)
+    }
+  ]
+};
+
+    if (option && typeof option === 'object') {
+      myChart.setOption(option);
+    }
+
+    window.addEventListener('resize', myChart.resize);
+}
 
 V.renderGraphLineChart = function(htmlId, data, type){
     if(type == "location"){

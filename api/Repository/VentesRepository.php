@@ -97,7 +97,11 @@ return $evolution;
 
     }
 
-    public function update($Vente) {
+    public function UsesPerCountries() {
+        $stmt = $this->cnx->prepare("SELECT Customers.country, COUNT(Sales.purchase_price) as value FROM Sales JOIN Customers ON Sales.customer_id = Customers.id GROUP BY Customers.country ORDER BY value Desc");
+        $stmt->execute();
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $results;
     }
 }
 ?>

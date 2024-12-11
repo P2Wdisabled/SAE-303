@@ -23,4 +23,10 @@ LocationsData.fetchRentEvolutionsPerGenre = async function(){
     let data = await getRequest('location?param=evolutionPerGenre');
     return data;
 }
+
+LocationsData.fetchUsesPerCountries = async function(){
+    let data = await getRequest('location?param=UsesPerCountries');
+    return data;
+}
+
 export {LocationsData};

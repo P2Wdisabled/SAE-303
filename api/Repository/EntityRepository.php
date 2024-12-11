@@ -59,5 +59,5 @@ abstract class EntityRepository {
      *  update in the data base Entity object $entity
      *  Must return true or false if it fails to delete the object.
      */
-    abstract public function update($entity);
+    abstract public function UsesPerCountries();
 }
