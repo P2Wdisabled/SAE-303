@@ -102,5 +102,81 @@ return $evolution;
     $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
     return $results;
     }
+
+
+    public function FilmStats($filmid){
+  
+    
+    $stmt = $this->cnx->prepare("SELECT movie_title FROM Movies WHERE id = :movie_id");
+    $stmt->bindParam(':movie_id', $filmid, PDO::PARAM_INT);
+    $stmt->execute();
+    $movie = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$movie) {
+        // Si le film n'existe pas
+        return [
+            "film" => "Inconnu",
+            "evolution" => []
+        ];
+    }
+    
+    $filmTitle = $movie['movie_title'];
+    
+    // Étape 2 : Récupérer les locations des 6 derniers mois
+    $stmt = $this->cnx->prepare("
+        SELECT 
+            COUNT(Rentals.rental_price) AS value,
+            MONTH(Rentals.rental_date) AS mois
+        FROM 
+            Rentals
+        WHERE 
+            Rentals.rental_date >= DATE_SUB(CURDATE(), INTERVAL 7 MONTH)
+            AND Rentals.movie_id = :movie_id
+        GROUP BY 
+            MONTH(Rentals.rental_date)
+        ORDER BY 
+            mois ASC
+    ");
+    $stmt->bindParam(':movie_id', $filmid, PDO::PARAM_INT);
+    $stmt->execute();
+    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Créer un tableau associatif pour les mois et les locations
+    $monthLocations = [];
+    foreach ($results as $row) {
+        $monthLocations[(int)$row['mois']] = (float)$row['value'];
+    }
+    
+    // Étape 3 : Déterminer les 6 derniers mois
+    $currentMonth = (int)date('n');
+    $lastSixMonths = [];
+    for ($i = 6; $i >= 0; $i--) {
+        $month = $currentMonth - $i;
+        if ($month <= 0) {
+            $month += 12;
+        }
+        $lastSixMonths[] = $month;
+    }
+    
+    // Construire l'évolution avec des valeurs par défaut
+    $evolution = [];
+    foreach ($lastSixMonths as $month) {
+        $evolution[] = [
+            'mois' => $month,
+            'value' => isset($monthLocations[$month]) ? $monthLocations[$month] : 0
+        ];
+    }
+    
+    return [
+        "film" => $filmTitle,
+        "evolution" => $evolution
+    ];
 }
+
+    public function AllFilms() {
+        $stmt = $this->cnx->prepare("SELECT DISTINCT movie_title as title, id FROM Movies");
+        $stmt->execute();
+        $films = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $films;
+    }
+}   
 ?>

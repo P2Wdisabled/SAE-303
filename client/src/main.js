@@ -21,12 +21,20 @@ C.init = async function(){
     let soldEvolutionsPerGenres = await VentesData.fetchSoldEvolutionsPerGenre();
     let rentUsesPerCountries = await LocationsData.fetchUsesPerCountries();
     let SoldUsesPerCountries = await VentesData.fetchSoldUsesPerCountries();
-    V.renderAxisWithTicks("rentUsesPerCountries", rentUsesPerCountries);
-    V.renderAxisWithTicks("SoldUsesPerCountries", SoldUsesPerCountries);
-    V.renderEvolutionsPerGenre(rentEvolutionsPerGenre, soldEvolutionsPerGenres);
-    V.renderEvolutions(soldEvolutions, rentEvolutions);
-    V.renderToplocations(toplocations, topventes);
-    V.renderPrices(ventes, location);
+    let fetchRentalFilmStats = await LocationsData.fetchFilmStats();
+    let fetchSoldFilmStats = await VentesData.fetchFilmStats();
+    let RentalFilmList = await LocationsData.fetchAllFilms("rentalfilmlist");
+    let SoldFilmList = await VentesData.fetchAllFilms("soldfilmlist");
+    await V.fetchAllFilms("rentalfilmlist", RentalFilmList);
+    await V.fetchAllFilms("soldfilmlist", SoldFilmList);
+    await V.renderFilmStatsAxisWithTicks("fetchRentalFilmStats", fetchRentalFilmStats);
+    await V.renderFilmStatsAxisWithTicks("fetchSoldFilmStats", fetchSoldFilmStats);
+    await V.renderAxisWithTicks("rentUsesPerCountries", rentUsesPerCountries);
+    await V.renderAxisWithTicks("SoldUsesPerCountries", SoldUsesPerCountries);
+    await V.renderEvolutionsPerGenre(rentEvolutionsPerGenre, soldEvolutionsPerGenres);
+    await V.renderEvolutions(soldEvolutions, rentEvolutions);
+    await V.renderToplocations(toplocations, topventes);
+    await V.renderPrices(ventes, location);
 }
 
 let V = {
@@ -41,6 +49,31 @@ V.init = function(){
 V.renderPrices = function(ventes, location){
     document.querySelector("#ventesContainer").textContent = ventes+" €";
     document.querySelector("#locationContainer").textContent = location+" €";
+}
+
+V.fetchAllFilms = function(htmlElem, FilmList){
+   FilmList.forEach(film => {
+        let div = document.createElement("option");
+        div.value = film.id;
+        div.textContent = film.title;
+        document.querySelector("#"+htmlElem).appendChild(div);
+        if(htmlElem == "rentalfilmlist"){
+          document.querySelector("#"+htmlElem).addEventListener("change", V.updateRentFilmStat);
+        }
+        if(htmlElem == "soldfilmlist"){
+          document.querySelector("#"+htmlElem).addEventListener("change", V.updateSoldFilmStat);
+        }
+});
+}
+
+V.updateRentFilmStat = async function(event){
+  let fetchFilmStats = await LocationsData.fetchFilmStats(event.target.value);
+  await V.renderFilmStatsAxisWithTicks("fetchRentalFilmStats", fetchFilmStats);
+}
+
+V.updateSoldFilmStat = async function(event){
+  let fetchFilmStats = await VentesData.fetchFilmStats(event.target.value);
+  await V.renderFilmStatsAxisWithTicks("fetchSoldFilmStats", fetchFilmStats);
 }
 
 V.renderToplocations = function(toplocations, topventes){
@@ -114,6 +147,61 @@ V.renderAxisWithTicks = function(htmlId, data) {
     window.addEventListener('resize', myChart.resize);
 }
 
+V.renderFilmStatsAxisWithTicks = function(htmlId, data) {
+  data = data.evolution;
+  var dom = document.querySelector("#"+htmlId);
+  var myChart = echarts.init(dom, null, {
+    renderer: 'canvas',
+    useDirtyRect: false
+  });
+  var app = {};
+  
+  var option;
+
+  option = {
+tooltip: {
+  trigger: 'axis',
+  axisPointer: {
+    type: 'shadow'
+  }
+},
+grid: {
+  left: '3%',
+  right: '4%',
+  bottom: '3%',
+  containLabel: true
+},
+xAxis: [
+  {
+    type: 'category',
+    data: data.map(e => e.mois),
+    axisTick: {
+      alignWithLabel: true
+    }
+  }
+],
+yAxis: [
+  {
+    type: 'value'
+  }
+],
+series: [
+  {
+    name: 'Direct',
+    type: 'bar',
+    barWidth: '60%',
+    data: data.map(e => e.value)
+  }
+]
+};
+
+  if (option && typeof option === 'object') {
+    myChart.setOption(option);
+  }
+
+  window.addEventListener('resize', myChart.resize);
+}
+
 V.renderGraphLineChart = function(htmlId, data, type){
     if(type == "location"){
         var dom = document.getElementById(htmlId);
@@ -167,7 +255,7 @@ V.renderGraphLineChart = function(htmlId, data, type){
             },
             series: [
                 {
-                  data: data.map(e => e.vente),
+                  data: data.map(e => e.achat),
                   type: 'line',
                   smooth: true
                 }
@@ -215,7 +303,7 @@ V.renderEvolutionsPerGenre = function(rentEvolutionsPerGenre, soldEvolutionsPerG
         html.appendChild(type);
         html.appendChild(container);
         html.appendChild(document.createElement("br"));
-        V.renderGraphLineChart(genre["genre"]+"evolutionsold", genre["evolution"], "location");
+        V.renderGraphLineChart(genre["genre"]+"evolutionsold", genre["evolution"], "ventes");
     }
     )
 

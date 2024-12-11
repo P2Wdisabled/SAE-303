@@ -32,6 +32,13 @@ class VentesController extends Controller {
         else if ($param == "UsesPerCountries") {
             return $this->ventes->UsesPerCountries();
         }
+        else if ($param == "FilmStats") {
+            $film = (int)$request->getParam("filmid");
+            return $this->ventes->FilmStats($film);
+        }
+        else if ($param == "AllFilms") {
+            return $this->ventes->AllFilms();
+        }
     }
 
     protected function processPostRequest(HttpRequest $request) {

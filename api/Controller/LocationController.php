@@ -32,6 +32,13 @@ class LocationController extends Controller {
         else if ($param == "UsesPerCountries") {
             return $this->location->UsesPerCountries();
         }
+        else if ($param == "FilmStats") {
+            $filmid = (int)$request->getParam("filmid");
+            return $this->location->FilmStats($filmid);
+        }
+        else if ($param == "AllFilms") {
+            return $this->location->AllFilms();
+        }
     }
 
     protected function processPostRequest(HttpRequest $request) {

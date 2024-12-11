@@ -29,4 +29,14 @@ LocationsData.fetchUsesPerCountries = async function(){
     return data;
 }
 
+LocationsData.fetchAllFilms = async function(){
+    let data = await getRequest('location?param=AllFilms');
+    return data;
+}
+LocationsData.fetchFilmStats = async function(film =1){
+    let data = await getRequest('location?param=FilmStats&filmid='+film)
+    return data;
+}
+
+
 export {LocationsData};

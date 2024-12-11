@@ -24,9 +24,17 @@ let data = await getRequest('ventes?param=evolutionPerGenre');
 return data;
 }
 
-
 VentesData.fetchSoldUsesPerCountries = async function(){
     let data = await getRequest('ventes?param=UsesPerCountries');
+    return data;
+}
+
+VentesData.fetchAllFilms = async function(){
+    let data = await getRequest('ventes?param=AllFilms');
+    return data;
+}
+VentesData.fetchFilmStats = async function(film =1){
+    let data = await getRequest('ventes?param=FilmStats&filmid='+film)
     return data;
 }
 export {VentesData};

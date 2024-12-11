@@ -60,4 +60,8 @@ abstract class EntityRepository {
      *  Must return true or false if it fails to delete the object.
      */
     abstract public function UsesPerCountries();
+
+    abstract public function FilmStats($film);
+
+    abstract public function AllFilms();
 }
