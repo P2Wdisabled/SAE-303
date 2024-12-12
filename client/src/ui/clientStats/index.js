@@ -1,42 +1,43 @@
-// src/ui/clientStats/index.js
-const templateFile = await fetch("ui/clientStats/template.html.inc");
-const template = await templateFile.text();
-
-import * as echarts from 'echarts'; // Assurez-vous d'avoir echarts installé ou inclus dans votre projet
 import { ClientData } from "../../data/client.js";
+
+const templateFile = await fetch("src/ui/clientStats/template.html.inc");
+const template = await templateFile.text();
 
 let ClientStatsView = {};
 
-ClientStatsView.render = async function(containerSelector, clients, clientStats){
-    const container = document.querySelector(containerSelector);
-    container.innerHTML = template;
-    await this.populateClientList(clients);
-    await this.renderClientTreeMap(clientStats);
-}
-
-ClientStatsView.populateClientList = async function(clients){
-    let clientList = document.querySelector("#clientList");
-    clientList.innerHTML = ''; // Clear previous options
+ClientStatsView.renderClientList = function(clients){
+    const clientList = document.querySelector("#clientList");
     clients.forEach(client => {
         let option = document.createElement("option");
         option.textContent = `${client.first_name} ${client.last_name}`;
         option.value = client.id;
         clientList.appendChild(option);
     });
-    
-    clientList.addEventListener("change", this.updateClientStats.bind(this));
+
+    clientList.addEventListener("change", ClientStatsView.updateClientStats);
 
     // Déclencher la mise à jour pour le premier client par défaut
     if(clients.length > 0){
         clientList.value = clients[0].id;
-        this.updateClientStats({ target: clientList });
+        ClientStatsView.updateClientStats({ target: clientList });
     }
 }
 
 ClientStatsView.updateClientStats = async function(event){
     let selectedClientId = event.target.value;
     let clientStats = await ClientData.fetchStats(selectedClientId);
-    this.renderClientTreeMap(clientStats);
+    
+    // Assurer que le conteneur existe
+    let clientStatsDiv = document.getElementById("ClientStats");
+    if (!clientStatsDiv) {
+        clientStatsDiv = document.createElement("div");
+        clientStatsDiv.id = "ClientStats";
+        clientStatsDiv.style.height = "50vh";
+        document.querySelector("#ClientStatsContainer").appendChild(clientStatsDiv);
+    }
+
+    // Rendre le treemap avec les nouvelles données
+    ClientStatsView.renderClientTreeMap(clientStats);
 }
 
 ClientStatsView.renderClientTreeMap = function(transactions) {
@@ -51,6 +52,7 @@ ClientStatsView.renderClientTreeMap = function(transactions) {
         "Thriller": "#bda29a"
     };
 
+    // Grouper les transactions par genre et par type de transaction
     const genreMap = {};
 
     transactions.forEach(tx => {
@@ -71,6 +73,7 @@ ClientStatsView.renderClientTreeMap = function(transactions) {
         });
     });
 
+    // Transformer les données en format treemap
     const treemapData = Object.keys(genreMap).map(genre => ({
         name: genre,
         itemStyle: {
@@ -85,10 +88,11 @@ ClientStatsView.renderClientTreeMap = function(transactions) {
         }))
     }));
 
+    // Initialiser ECharts
     const dom = document.getElementById('ClientStats');
     let myChart = echarts.getInstanceByDom(dom);
     if (myChart) {
-        myChart.dispose();
+        myChart.dispose(); // Détruire l'instance existante avant d'en créer une nouvelle
     }
     myChart = echarts.init(dom, null, {
         renderer: 'canvas',
@@ -106,8 +110,8 @@ ClientStatsView.renderClientTreeMap = function(transactions) {
                 const treePathInfo = info.treePathInfo;
                 const treePath = treePathInfo.map(item => item.name).join(' / ');
                 return `
-                  <div class="tooltip-title">${echarts.format.encodeHTML(treePath)}</div>
-                  <div>Prix: ${echarts.format.addCommas(value)} €</div>
+                    <div class="tooltip-title">${echarts.format.encodeHTML(treePath)}</div>
+                    <div>Prix: ${echarts.format.addCommas(value)} €</div>
                 `;
             }
         },
@@ -169,6 +173,7 @@ ClientStatsView.renderClientTreeMap = function(transactions) {
         ]
     };
 
+    // Appliquer l'option au graphique
     myChart.setOption(option);
 }
 

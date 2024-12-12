@@ -15,6 +15,12 @@
     "vite": "^5.4.8"
   },
   "dependencies": {
-    "client": "file:"
-  }
+    "client": "file:",
+    "echarts": "^5.5.1"
+  },
+  "main": "postcss.config.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
 }

@@ -1,22 +1,15 @@
-// src/ui/topVentes/index.js
-const templateFile = await fetch("ui/topVentes/template.html.inc");
+const templateFile = await fetch("src/ui/topventes/template.html.inc");
 const template = await templateFile.text();
 
 let TopVentesView = {};
 
-TopVentesView.render = async function(containerSelector, topventes){
-    const container = document.querySelector(containerSelector);
-    container.innerHTML = template;
-    this.update(topventes);
-}
-
-TopVentesView.update = function(topventes){
-    let topventesContainer = document.querySelector("#topventesContainer");
-    topventesContainer.innerHTML = "";
+TopVentesView.renderTopventes = function(topventes){
+    const container = document.querySelector("#topventesContainer");
+    container.innerHTML = "";
     topventes.forEach(vente => {
         let div = document.createElement("div");
         div.textContent = `${vente.movie_title} : ${vente.nb}`;
-        topventesContainer.appendChild(div);
+        container.appendChild(div);
     });
 }
 
