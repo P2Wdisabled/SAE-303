@@ -64,4 +64,8 @@ abstract class EntityRepository {
     abstract public function FilmStats($film);
 
     abstract public function AllFilms();
+
+    abstract public function getStats($clientid);
+
+    abstract public function getList();
 }

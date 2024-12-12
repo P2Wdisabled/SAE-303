@@ -1,6 +1,7 @@
 import { HeaderView } from "./ui/header/index.js";
 import { VentesData } from "./data/ventes.js";
 import { LocationsData } from "./data/locations.js";
+import { ClientData } from "./data/client.js";
 
 /*
 import './index.css';
@@ -11,30 +12,38 @@ let C = {};
 
 C.init = async function(){
     V.init();
-    let location = await LocationsData.fetchLocations();
-    let ventes = await VentesData.fetchVentes();
-    let toplocations = await LocationsData.fetchMostLocations();
-    let topventes = await VentesData.fetchMostVentes();
-    let soldEvolutions = await VentesData.fetchSoldEvolutions();
-    let rentEvolutions = await LocationsData.fetchRentEvolutions();
-    let rentEvolutionsPerGenre = await LocationsData.fetchRentEvolutionsPerGenre();
-    let soldEvolutionsPerGenres = await VentesData.fetchSoldEvolutionsPerGenre();
-    let rentUsesPerCountries = await LocationsData.fetchUsesPerCountries();
-    let SoldUsesPerCountries = await VentesData.fetchSoldUsesPerCountries();
-    let fetchRentalFilmStats = await LocationsData.fetchFilmStats();
-    let fetchSoldFilmStats = await VentesData.fetchFilmStats();
-    let RentalFilmList = await LocationsData.fetchAllFilms("rentalfilmlist");
-    let SoldFilmList = await VentesData.fetchAllFilms("soldfilmlist");
-    await V.fetchAllFilms("rentalfilmlist", RentalFilmList);
-    await V.fetchAllFilms("soldfilmlist", SoldFilmList);
-    await V.renderFilmStatsAxisWithTicks("fetchRentalFilmStats", fetchRentalFilmStats);
-    await V.renderFilmStatsAxisWithTicks("fetchSoldFilmStats", fetchSoldFilmStats);
-    await V.renderAxisWithTicks("rentUsesPerCountries", rentUsesPerCountries);
-    await V.renderAxisWithTicks("SoldUsesPerCountries", SoldUsesPerCountries);
-    await V.renderEvolutionsPerGenre(rentEvolutionsPerGenre, soldEvolutionsPerGenres);
-    await V.renderEvolutions(soldEvolutions, rentEvolutions);
-    await V.renderToplocations(toplocations, topventes);
-    await V.renderPrices(ventes, location);
+    //let location = await LocationsData.fetchLocations();
+    //let ventes = await VentesData.fetchVentes();
+    //let toplocations = await LocationsData.fetchMostLocations();
+    //let topventes = await VentesData.fetchMostVentes();
+    //let soldEvolutions = await VentesData.fetchSoldEvolutions();
+    //let rentEvolutions = await LocationsData.fetchRentEvolutions();
+    //let rentEvolutionsPerGenre = await LocationsData.fetchRentEvolutionsPerGenre();
+    //let soldEvolutionsPerGenres = await VentesData.fetchSoldEvolutionsPerGenre();
+    //let rentUsesPerCountries = await LocationsData.fetchUsesPerCountries();
+    //let SoldUsesPerCountries = await VentesData.fetchSoldUsesPerCountries();
+    //let fetchRentalFilmStats = await LocationsData.fetchFilmStats();
+    //let fetchSoldFilmStats = await VentesData.fetchFilmStats();
+    //let RentalFilmList = await LocationsData.fetchAllFilms("rentalfilmlist");
+    //let SoldFilmList = await VentesData.fetchAllFilms("soldfilmlist");
+
+
+    let clientStats = await ClientData.fetchStats();
+    let clients = await ClientData.fetchClients();
+    await V.renderClientList(clients);
+    await V.renderClientTreeMap(clientStats);
+
+
+    //await V.fetchAllFilms("rentalfilmlist", RentalFilmList);
+    //await V.fetchAllFilms("soldfilmlist", SoldFilmList);
+    //await V.renderFilmStatsAxisWithTicks("fetchRentalFilmStats", fetchRentalFilmStats);
+    //await V.renderFilmStatsAxisWithTicks("fetchSoldFilmStats", fetchSoldFilmStats);
+    //await V.renderAxisWithTicks("rentUsesPerCountries", rentUsesPerCountries);
+    //await V.renderAxisWithTicks("SoldUsesPerCountries", SoldUsesPerCountries);
+    //await V.renderEvolutionsPerGenre(rentEvolutionsPerGenre, soldEvolutionsPerGenres);
+    //await V.renderEvolutions(soldEvolutions, rentEvolutions);
+    //await V.renderToplocations(toplocations, topventes);
+    //await V.renderPrices(ventes, location);
 }
 
 let V = {
@@ -308,6 +317,188 @@ V.renderEvolutionsPerGenre = function(rentEvolutionsPerGenre, soldEvolutionsPerG
     )
 
 }
+
+V.renderClientTreeMap = function(transactions) {
+  const genreColors = {
+    "Action": "#c23531",
+    "Animation": "#2f4554",
+    "Comedy": "#61a0a8",
+    "Drama": "#d48265",
+    "Horror": "#91c7ae",
+    "Romance": "#749f83",
+    "Sci-Fi": "#ca8622",
+    "Thriller": "#bda29a"
+  };
+
+  // Suppression du filtre fixe pour customer_id
+  // Utilisation directe des transactions passées en paramètre
+
+  // Grouper les transactions par genre, puis par type de transaction
+  const genreMap = {};
+
+  transactions.forEach(tx => {
+    const genre = tx.genre;
+    const type = tx.transaction_type; // "Sale" ou "Rental"
+
+    if (!genreMap[genre]) {
+      genreMap[genre] = {};
+    }
+
+    if (!genreMap[genre][type]) {
+      genreMap[genre][type] = [];
+    }
+
+    genreMap[genre][type].push({
+      name: tx.movie_title,
+      value: parseFloat(tx.price) // Vous pouvez choisir une autre métrique, comme la durée ou la note
+    });
+  });
+
+  // Transformer les données en format treemap avec hiérarchie : Genre > Type de Transaction > Films
+  const treemapData = Object.keys(genreMap).map(genre => ({
+    name: genre,
+    itemStyle: {
+      color: genreColors[genre] || '#000000' // Assignation de la couleur par genre
+    },
+    children: Object.keys(genreMap[genre]).map(type => ({
+      name: type,
+      children: genreMap[genre][type],
+      itemStyle: {
+        color: genreColors[genre] // Assurer que les sous-catégories héritent de la couleur du genre
+      }
+    }))
+  }));
+
+  // Initialiser ECharts
+  const dom = document.getElementById('ClientStats');
+  let myChart = echarts.getInstanceByDom(dom);
+  if (myChart) {
+    myChart.dispose(); // Détruire l'instance existante avant d'en créer une nouvelle
+  }
+  myChart = echarts.init(dom, null, {
+    renderer: 'canvas',
+    useDirtyRect: false
+  });
+
+  const option = {
+    title: {
+      text: 'Films Regardés par Genre et Type de Transaction',
+      left: 'center'
+    },
+    tooltip: {
+      formatter: function (info) {
+        const value = info.value;
+        const treePathInfo = info.treePathInfo;
+        const treePath = treePathInfo.map(item => item.name).join(' / ');
+        return `
+          <div class="tooltip-title">${echarts.format.encodeHTML(treePath)}</div>
+          <div>Prix: ${echarts.format.addCommas(value)} €</div>
+        `;
+      }
+    },
+    series: [
+      {
+        name: 'Transactions',
+        type: 'treemap',
+        visibleMin: 300,
+        label: {
+          show: true,
+          formatter: '{b}'
+        },
+        itemStyle: {
+          borderColor: '#fff'
+        },
+        data: treemapData,
+        levels: [
+          {
+            // Niveau pour le genre
+            colorSaturation: [0.35, 0.5],
+            itemStyle: {
+              borderColor: '#000',
+              borderWidth: 2,
+              gapWidth: 5
+            },
+            upperLabel: {
+              show: true,
+              formatter: '{b}',
+              fontSize: 16,
+              fontWeight: 'bold'
+            }
+          },
+          {
+            // Niveau pour le type de transaction
+            itemStyle: {
+              gapWidth: 1,
+              borderColorSaturation: 0.6
+            },
+            upperLabel: {
+              show: true,
+              formatter: '{b}',
+              fontSize: 14,
+              fontWeight: 'bold'
+            }
+          },
+          {
+            // Niveau pour les films
+            itemStyle: {
+              gapWidth: 1
+            },
+            label: {
+              show: true,
+              formatter: '{b}',
+              fontSize: 12
+            }
+          }
+        ]
+      }
+    ]
+  };
+
+  // Appliquer l'option au graphique
+  myChart.setOption(option);
+}
+
+
+
+V.renderClientList = function(clients){
+  let clientList = document.querySelector("#clientList");
+  clients.forEach(client => {
+      let optionv = document.createElement("option");
+      optionv.textContent = client.first_name + " " + client.last_name;
+      optionv.value = client.id;
+      clientList.appendChild(optionv);
+  });
+  
+  clientList.addEventListener("change", V.updateClientStats);
+
+  // Déclencher la mise à jour pour le premier client par défaut
+  if(clients.length > 0){
+      clientList.value = clients[0].id;
+      V.updateClientStats({ target: clientList });
+  }
+}
+
+
+V.updateClientStats = async function(event){
+  let selectedClientId = event.target.value;
+  let clientStats = await ClientData.fetchStats(selectedClientId);
+  
+  // Réutiliser le conteneur existant sans le supprimer
+  // S'assurer que le conteneur a bien l'ID 'ClientStats' et une hauteur définie
+  let clientStatsDiv = document.getElementById("ClientStats");
+  if (!clientStatsDiv) {
+      clientStatsDiv = document.createElement("div");
+      clientStatsDiv.id = "ClientStats";
+      clientStatsDiv.style.height = "50vh";
+      document.querySelector("#ClientStatsContainer").appendChild(clientStatsDiv);
+  }
+
+  // Appeler la fonction pour rendre le treemap avec les nouvelles données
+  V.renderClientTreeMap(clientStats);
+}
+
+
+
 V.renderHeader= function(){
     V.header.innerHTML = HeaderView.render();
 }

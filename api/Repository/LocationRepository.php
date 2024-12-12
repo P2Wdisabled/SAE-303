@@ -178,5 +178,10 @@ return $evolution;
         $films = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $films;
     }
+
+    
+    public function getStats($clientid){}
+
+    public function getList(){}
 }   
 ?>
