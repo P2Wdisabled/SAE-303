@@ -1,66 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAE3.DWeb-DI.03 base code</title>
-    <link rel="stylesheet" href="src/index.css">
+    <title>Dashboard Films</title>
+    <!-- Assurez-vous d'inclure ECharts -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
 </head>
 <body class="bg-gray-100">
     <section id="header"></section>
-    <!--affichage de la somme total des location et des ventes-->
-    <section id="total">
-        <h2>Somme total des locations</h2>
-        <div id="locationContainer"></div>
-        <h2>Somme total des ventes</h2>
-        <div id="ventesContainer"></div>
-        <h2>top 3 meilleur locations du mois</h2>
-        <div id="toplocationsContainer"></div>
-        <h2>top 3 meilleur ventes du mois</h2>
-        <div id="topventesContainer"></div>
-    </section>
-
-    <br>
-    <p>evolution des ventes</p><br>
-    <div id="soldEvolutions" style="height: 50vh"></div>
-    <br><br>
-    <p>evolution des locations</p><br>
-    <div id="rentEvolutions" style="height: 50vh"></div>
-    <br><br><br>
-    <h2>evolution par genre sur 6 mois (locations)</h2><br>
-    <div id="iteration6Rent"></div>
-    <br><br>
     
-    <h2>evolution par genre sur 6 mois (ventes)</h2><br>
-    <div id="iteration6Sold"></div>
-    <br><br><br>
-    <h2>rent Uses Per Countries</h2>
-    <div id="rentUsesPerCountries" style="height: 50vh"></div>
-    <br><br>
-    <h2>Sold Uses Per Countries</h2>
-    <div id="SoldUsesPerCountries" style="height: 50vh"></div>
-    <br><br>
-    <h2>fetchFilmStats (rental)</h2>
-    <div id="fetchRentalFilmStats" style="height: 50vh;"></div>
-    <br><br><br>
-    <h2>list des films</h2>
-    <select name="" id="rentalfilmlist"> 
-    </select>
-    <br><br>
-    <h2>fetch Film Stats (sold)</h2>
-    <div id="fetchSoldFilmStats" style="height: 50vh;"></div>
-    <br><br><br>
-    <h2>list des films</h2>
-    <select name="" id="soldfilmlist">
-    </select>
-    <br><br><br>
-    <h2>Client stats</h2>
+    <!-- Composant PricesView -->
+    <section id="prices"></section>
     
-    <div id="ClientStats" style="height: 50vh;"></div>
-    <select name="" id="clientList"></select>
+    <!-- Composant TopLocationsView -->
+    <section id="topLocations"></section>
     
-<script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
-
-    <script type="module" src="src/main.js"></script>
+    <!-- Composant TopVentesView -->
+    <section id="topVentes"></section>
+    
+    <!-- Composant EvolutionsView -->
+    <section id="evolutions"></section>
+    
+    <!-- Composant EvolutionsPerGenreView -->
+    <section id="evolutionsPerGenre"></section>
+    
+    <!-- Composant UsesPerCountriesView -->
+    <section id="usesPerCountries"></section>
+    
+    <!-- Composant FilmStatsView -->
+    <section id="filmStats"></section>
+    
+    <!-- Composant ClientStatsView -->
+    <section id="clientStats"></section>
+    
+    <!-- Inclure votre script principal -->
+    <script type="module" src="./src/main.js"></script>
 </body>
 </html>

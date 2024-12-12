@@ -1,14 +1,16 @@
+// src/ui/header/index.js
+const templateFile = fetch("src/ui/header/template.html.inc").then(response => response.text());
 
-const templateFile = await fetch("src/ui/header/template.html");
-const template = await templateFile.text();
+const HeaderView = {
+    template: null,
 
+    async init() {
+        this.template = await templateFile;
+    },
 
-let HeaderView = {};
+    render() {
+        return this.template;
+    }
+};
 
-HeaderView.render = function(){
-    return template;
-}
-
-
-
-export {HeaderView};
+export { HeaderView };
