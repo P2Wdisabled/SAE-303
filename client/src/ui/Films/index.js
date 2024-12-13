@@ -3,7 +3,7 @@ import * as echarts from 'echarts';
 
 let Films = {};
 
-Films.renderFilmHeatmap = function(consumtion){
+Films.renderFilmHeatmap = async function(consumtion){
     var dom = document.getElementById('FilmsConsumtion');
         var myChart = echarts.init(dom, null, {
             renderer: 'canvas',

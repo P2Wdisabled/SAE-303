@@ -1,7 +1,7 @@
 
 let Prices = {};
 
-Prices.renderPrices = function(ventes, location){
+Prices.renderPrices = async function(ventes, location){
     const ventesContainer = document.querySelector("#ventesContainer");
     const locationContainer = document.querySelector("#locationContainer");
 

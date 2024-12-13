@@ -1,7 +1,7 @@
 
 let Performances = {};
 
-Performances.renderTopPerformers = function(toplocations, topventes){
+Performances.renderTopPerformers = async function(toplocations, topventes){
     const toplocationsContainer = document.querySelector("#toplocationsContainer");
     const topventesContainer = document.querySelector("#topventesContainer");
 

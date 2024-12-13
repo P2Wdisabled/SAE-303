@@ -6,7 +6,7 @@ import * as echarts from 'echarts';
 
 let Clients = {};
 
-Clients.renderClientList = function(clients){
+Clients.renderClientList = async function(clients){
     const clientList = document.querySelector("#clientList");
     if (!clientList) {
         console.error("Element avec l'ID clientList introuvable.");

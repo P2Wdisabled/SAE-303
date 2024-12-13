@@ -5,7 +5,7 @@ import { VentesData } from "../../data/ventes.js";
 
 let FilmStats = {};
 
-FilmStats.render = function(fetchRentalFilmStats, fetchSoldFilmStats, rentalFilmList, soldFilmList){
+FilmStats.render = async function(fetchRentalFilmStats, fetchSoldFilmStats, rentalFilmList, soldFilmList){
     // Rendu pour les films de location
     const rentalStatsContainer = document.querySelector("#fetchRentalFilmStats");
     if (!rentalStatsContainer) {
@@ -31,7 +31,7 @@ FilmStats.render = function(fetchRentalFilmStats, fetchSoldFilmStats, rentalFilm
     renderFilmStatsAxisWithTicks("fetchSoldFilmStats", fetchSoldFilmStats);
 }
 
-function populateFilmList(elementId, filmList, type){
+async function populateFilmList(elementId, filmList, type){
     const selectElem = document.getElementById(elementId);
     if (!selectElem) {
         console.error(`FilmStats: Element avec l'ID ${elementId} introuvable.`);
@@ -71,7 +71,7 @@ async function updateSoldFilmStat(event){
     }
 }
 
-function renderFilmStatsAxisWithTicks(htmlId, data) {
+async function renderFilmStatsAxisWithTicks(htmlId, data) {
     if(!data || !data.evolution) {
         console.error("FilmStats: Données d'évolution manquantes.", data);
         return;

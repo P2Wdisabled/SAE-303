@@ -4,12 +4,12 @@ import * as echarts from 'echarts';
 
 let Evolution = {};
 
-Evolution.renderEvolutions = function(soldEvolutions, rentEvolutions){
+Evolution.renderEvolutions = async function(soldEvolutions, rentEvolutions){
     Evolution.renderGraphLineChart("soldEvolutions", soldEvolutions, "ventes");
     Evolution.renderGraphLineChart("rentEvolutions", rentEvolutions, "location");
 }
 
-Evolution.renderGenres = function(rentEvolutionsPerGenre, soldEvolutionsPerGenre){
+Evolution.renderGenres = async function(rentEvolutionsPerGenre, soldEvolutionsPerGenre){
     
     // Rendu pour les locations
     const rentContainer = document.querySelector("#iteration6Rent");
@@ -58,7 +58,7 @@ Evolution.renderGenres = function(rentEvolutionsPerGenre, soldEvolutionsPerGenre
     });
 }
 
-Evolution.renderGraphLineChart = function(htmlId, data, type){
+Evolution.renderGraphLineChart = async function(htmlId, data, type){
     var dom = document.getElementById(htmlId);
     if(!dom) {
         console.error(`EvolutionParGenre: Element avec l'ID ${htmlId} introuvable.`);
@@ -124,7 +124,7 @@ Evolution.renderGraphLineChart = function(htmlId, data, type){
     window.addEventListener('resize', myChart.resize);
 }
 
-Evolution.renderUsesPerCountries = function(htmlId, data) {
+Evolution.renderUsesPerCountries = async function(htmlId, data) {
     var dom = document.querySelector("#"+htmlId);
     if (!dom) {
         console.error(`Element avec l'ID ${htmlId} introuvable.`);
