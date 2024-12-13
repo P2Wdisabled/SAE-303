@@ -10,7 +10,7 @@ import { FilmsData } from "./data/films.js";
 Si vous avez un fichier CSS personnalisé, vous pouvez l'importer ici :
 import './index.css';
 */
-
+import * as echarts from 'echarts';
 // Objet principal de l'application
 let App = {};
 // Variable de contrôle du chargement
@@ -622,6 +622,7 @@ V.setLoading = function() {
         loadingScreen.classList.remove('hidden');
         loadingScreen.classList.add('flex');
       } else {
+        console.log('Loading screen goes off')
         loadingScreen.classList.remove('flex');
         loadingScreen.classList.add('hidden');
       }

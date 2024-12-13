@@ -1,3 +1,5 @@
+import * as echarts from 'echarts';
+
 // src/ui/prices/index.js
 
 let PricesView = {};

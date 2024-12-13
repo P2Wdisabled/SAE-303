@@ -1,3 +1,5 @@
+import * as echarts from 'echarts';
+
 // src/ui/evolutionParGenre/index.js
 
 let EvolutionParGenre = {};

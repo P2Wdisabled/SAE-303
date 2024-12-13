@@ -1,3 +1,5 @@
+import * as echarts from 'echarts';
+
 const templateFile = await fetch("src/ui/soldEvolutions/template.html.inc");
 const template = await templateFile.text();
 

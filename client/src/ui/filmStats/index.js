@@ -1,3 +1,5 @@
+import * as echarts from 'echarts';
+
 import { LocationsData } from "../../data/locations.js";
 import { VentesData } from "../../data/ventes.js";
 

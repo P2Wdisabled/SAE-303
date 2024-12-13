@@ -1,3 +1,5 @@
+import * as echarts from 'echarts';
+
 import { ClientData } from "../../data/client.js";
 
 const templateFile = await fetch("src/ui/clientStats/template.html.inc");
