@@ -26,7 +26,7 @@ Evolution.renderGenres = async function(rentEvolutionsPerGenre, soldEvolutionsPe
         title.className = "text-xl font-medium mb-4";
         title.textContent = genre.genre;
         let upperContainer = document.createElement("div");
-        upperContainer.className = "flex flex-col";
+        upperContainer.className = "flex flex-col w-96";
         upperContainer.id = "rent-Genre-Evolution";
         upperContainer.appendChild(title);
         upperContainer.appendChild(container);
