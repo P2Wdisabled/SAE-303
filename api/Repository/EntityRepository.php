@@ -21,7 +21,8 @@ abstract class EntityRepository {
 
     protected function __construct(){
         // Modifiez ici vos informations de BDD et de connexion
-        $this->cnx = new PDO("mysql:host=127.0.0.1:8889;dbname=mora", "root", "root");
+        $pswd = "Hhcfiy6A4(jMr3Yx";
+        $this->cnx = new PDO("mysql:host=54.37.68.129:3306;dbname=SAE303-VOD", "viewer", $pswd);
     }
 
     /**
@@ -29,14 +30,14 @@ abstract class EntityRepository {
      *  Query the data base for the entity with id $id.
      *  Must return an Entity object or false if the query fails
      */
-    abstract public function find($id);
+    abstract public function mostUsed();
 
     /**
      *  findAll
      *  Query the data base for all the entities
      *  Must return an array of Entity objects or false if the query fails
      */
-    abstract public function findAll();
+    abstract public function TotalLastmonth();
 
     /**
      *  save
@@ -44,19 +45,27 @@ abstract class EntityRepository {
      *  Update the Entity object with its data base id.
      *  Must return true or false if it fails to save the object.
      */
-    abstract public function save($entity);
+    abstract public function evolution();
 
     /**
      *  delete
      *  delete in the data base Entity object with id $id
      *  Must return true or false if it fails to delete the object.
      */
-    abstract public function delete($id);
+    abstract public function evolutionpergenre();
 
      /**
      *  udpate
      *  update in the data base Entity object $entity
      *  Must return true or false if it fails to delete the object.
      */
-    abstract public function update($entity);
+    abstract public function UsesPerCountries();
+
+    abstract public function FilmStats($film);
+
+    abstract public function AllFilms();
+
+    abstract public function getStats($clientid);
+
+    abstract public function getList();
 }
