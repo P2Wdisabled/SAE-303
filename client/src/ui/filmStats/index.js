@@ -3,9 +3,6 @@ import * as echarts from 'echarts';
 import { LocationsData } from "../../data/locations.js";
 import { VentesData } from "../../data/ventes.js";
 
-const templateFile = await fetch("src/ui/filmStats/template.html.inc");
-const template = await templateFile.text();
-
 let FilmStats = {};
 
 FilmStats.render = function(fetchRentalFilmStats, fetchSoldFilmStats, rentalFilmList, soldFilmList){
@@ -15,7 +12,7 @@ FilmStats.render = function(fetchRentalFilmStats, fetchSoldFilmStats, rentalFilm
         console.error("Element avec l'ID fetchRentalFilmStats introuvable.");
         return;
     }
-    rentalStatsContainer.innerHTML = template;
+    rentalStatsContainer.innerHTML = "";
 
     // Rendu pour les films vendus
     const soldStatsContainer = document.querySelector("#fetchSoldFilmStats");
@@ -23,7 +20,7 @@ FilmStats.render = function(fetchRentalFilmStats, fetchSoldFilmStats, rentalFilm
         console.error("Element avec l'ID fetchSoldFilmStats introuvable.");
         return;
     }
-    soldStatsContainer.innerHTML = template;
+    soldStatsContainer.innerHTML = "";
 
     // Remplir les listes de films
     populateFilmList("rentalfilmlist", rentalFilmList, "rental");

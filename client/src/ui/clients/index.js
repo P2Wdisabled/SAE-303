@@ -1,14 +1,19 @@
-import * as echarts from 'echarts';
 
 import { ClientData } from "../../data/client.js";
+import * as echarts from 'echarts';
 
-const templateFile = await fetch("src/ui/clientStats/template.html.inc");
-const template = await templateFile.text();
+// src/ui/evolutionParGenre/index.js
 
-let ClientStatsView = {};
+let Clients = {};
 
-ClientStatsView.renderClientList = function(clients){
+Clients.renderClientList = function(clients){
     const clientList = document.querySelector("#clientList");
+    if (!clientList) {
+        console.error("Element avec l'ID clientList introuvable.");
+        return;
+    }
+
+    clientList.innerHTML = ""; // Reset the list
     clients.forEach(client => {
         let option = document.createElement("option");
         option.textContent = `${client.first_name} ${client.last_name}`;
@@ -16,33 +21,27 @@ ClientStatsView.renderClientList = function(clients){
         clientList.appendChild(option);
     });
 
-    clientList.addEventListener("change", ClientStatsView.updateClientStats);
+    clientList.addEventListener("change", Clients.updateClientStats);
 
     // Déclencher la mise à jour pour le premier client par défaut
     if(clients.length > 0){
         clientList.value = clients[0].id;
-        ClientStatsView.updateClientStats({ target: clientList });
+        Clients.updateClientStats({ target: clientList });
     }
 }
 
-ClientStatsView.updateClientStats = async function(event){
-    let selectedClientId = event.target.value;
-    let clientStats = await ClientData.fetchStats(selectedClientId);
-    
-    // Assurer que le conteneur existe
-    let clientStatsDiv = document.getElementById("ClientStats");
-    if (!clientStatsDiv) {
-        clientStatsDiv = document.createElement("div");
-        clientStatsDiv.id = "ClientStats";
-        clientStatsDiv.style.height = "50vh";
-        document.querySelector("#ClientStatsContainer").appendChild(clientStatsDiv);
-    }
 
-    // Rendre le treemap avec les nouvelles données
-    ClientStatsView.renderClientTreeMap(clientStats);
+Clients.updateClientStats = async function(event){
+    const selectedClientId = event.target.value;
+    try {
+        const clientStats = await ClientData.fetchStats(selectedClientId);
+        Clients.renderClientTreeMap(clientStats);
+    } catch (error) {
+        console.error("Erreur lors de la mise à jour des stats du client :", error);
+    }
 }
 
-ClientStatsView.renderClientTreeMap = function(transactions) {
+Clients.renderClientTreeMap = function(transactions) {
     const genreColors = {
         "Action": "#c23531",
         "Animation": "#2f4554",
@@ -54,7 +53,6 @@ ClientStatsView.renderClientTreeMap = function(transactions) {
         "Thriller": "#bda29a"
     };
 
-    // Grouper les transactions par genre et par type de transaction
     const genreMap = {};
 
     transactions.forEach(tx => {
@@ -75,7 +73,6 @@ ClientStatsView.renderClientTreeMap = function(transactions) {
         });
     });
 
-    // Transformer les données en format treemap
     const treemapData = Object.keys(genreMap).map(genre => ({
         name: genre,
         itemStyle: {
@@ -90,11 +87,15 @@ ClientStatsView.renderClientTreeMap = function(transactions) {
         }))
     }));
 
-    // Initialiser ECharts
     const dom = document.getElementById('ClientStats');
+    if (!dom) {
+        console.error("Element avec l'ID ClientStats introuvable.");
+        return;
+    }
+
     let myChart = echarts.getInstanceByDom(dom);
     if (myChart) {
-        myChart.dispose(); // Détruire l'instance existante avant d'en créer une nouvelle
+        myChart.dispose();
     }
     myChart = echarts.init(dom, null, {
         renderer: 'canvas',
@@ -112,7 +113,7 @@ ClientStatsView.renderClientTreeMap = function(transactions) {
                 const treePathInfo = info.treePathInfo;
                 const treePath = treePathInfo.map(item => item.name).join(' / ');
                 return `
-                    <div class="tooltip-title">${echarts.format.encodeHTML(treePath)}</div>
+                    <div class="tooltip-title font-bold">${echarts.format.encodeHTML(treePath)}</div>
                     <div>Prix: ${echarts.format.addCommas(value)} €</div>
                 `;
             }
@@ -124,7 +125,9 @@ ClientStatsView.renderClientTreeMap = function(transactions) {
                 visibleMin: 300,
                 label: {
                     show: true,
-                    formatter: '{b}'
+                    formatter: '{b}',
+                    color: '#000',
+                    fontSize: 12
                 },
                 itemStyle: {
                     borderColor: '#fff'
@@ -175,8 +178,13 @@ ClientStatsView.renderClientTreeMap = function(transactions) {
         ]
     };
 
-    // Appliquer l'option au graphique
-    myChart.setOption(option);
+    if (option && typeof option === 'object') {
+        myChart.setOption(option);
+    } else {
+        console.error("Option invalide pour le treemap ClientStats:", option);
+    }
+
+    window.addEventListener('resize', myChart.resize);
 }
 
-export { ClientStatsView };
+export { Clients };
