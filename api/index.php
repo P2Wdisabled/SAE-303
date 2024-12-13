@@ -3,6 +3,7 @@ require_once "Class/HttpRequest.php";
 require_once "Controller/VentesController.php";
 require_once "Controller/LocationController.php";
 require_once "Controller/ClientController.php";
+require_once "Controller/FilmsController.php";
 
 
 /** IMPORTANT
@@ -29,7 +30,8 @@ require_once "Controller/ClientController.php";
 $router = [
     "ventes" => new VentesController(),
     "location" => new LocationController(),
-    "client" => new ClientController()
+    "client" => new ClientController(),
+    "Films" => new FilmsController()
 ];
 
 // objet HttpRequest qui contient toutes les infos utiles sur la requêtes (voir class/HttpRequest.php)

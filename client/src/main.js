@@ -4,6 +4,7 @@ import { LocationsData } from "./data/locations.js";
 import { ClientData } from "./data/client.js";
 import { EvolutionParGenre } from "./ui/evolutionParGenre/index.js";
 import { FilmStats } from "./ui/filmStats/index.js";
+import { FilmsData } from "./data/films.js";
 
 /*
 Si vous avez un fichier CSS personnalisé, vous pouvez l'importer ici :
@@ -26,7 +27,7 @@ App.init = async function(){
         let [location, ventes, toplocations, topventes, soldEvolutions, rentEvolutions,
              rentEvolutionsPerGenre, soldEvolutionsPerGenre, rentUsesPerCountries,
              soldUsesPerCountries, fetchRentalFilmStats, fetchSoldFilmStats,
-             rentalFilmList, soldFilmList, clientStats, clients] = await Promise.all([
+             rentalFilmList, soldFilmList, clientStats, clients, consumtion] = await Promise.all([
             LocationsData.fetchLocations(),
             VentesData.fetchVentes(),
             LocationsData.fetchMostLocations(),
@@ -42,7 +43,8 @@ App.init = async function(){
             LocationsData.fetchAllFilms("rentalfilmlist"),
             VentesData.fetchAllFilms("soldfilmlist"),
             ClientData.fetchStats(),
-            ClientData.fetchClients()
+            ClientData.fetchClients(),
+            FilmsData.fetchConsumtion()
         ]);
 
         console.log("Données récupérées avec succès.");
@@ -69,6 +71,7 @@ App.init = async function(){
         // Rendu des statistiques des clients
         V.renderClientList(clients);
         V.renderClientTreeMap(clientStats);
+        V.renderFilmHeatmap(consumtion);
         V.loadCarousel();
         console.log("Rendu des graphiques terminé.");
         isLoading = false;
@@ -263,6 +266,106 @@ V.renderGraphLineChart = function(htmlId, data, type){
     }
 
     window.addEventListener('resize', myChart.resize);
+}
+
+V.renderFilmHeatmap = function(consumtion){
+    var dom = document.getElementById('FilmsConsumtion');
+        var myChart = echarts.init(dom, null, {
+            renderer: 'canvas',
+            useDirtyRect: false
+        });
+        var app = {};
+
+        var option;
+
+        // Fonction pour extraire les catégories uniques et trier les mois
+        function extractCategories(data) {
+            const paysSet = new Set();
+            const moisSet = new Set();
+
+            data.forEach(item => {
+                paysSet.add(item.Pays);
+                moisSet.add(item.Mois);
+            });
+
+            // Convertir les ensembles en tableaux et trier les mois
+            const pays = Array.from(paysSet).sort();
+            const mois = Array.from(moisSet).sort((a, b) => new Date(a) - new Date(b));
+
+            return { pays, mois };
+        }
+
+        // Extraire les catégories
+        const { pays, mois } = extractCategories(consumtion);
+
+        // Préparer les données pour ECharts
+        const data = consumtion.map(item => {
+            return [item.Mois, item.Pays, parseFloat(item.Consommation_GB)];
+        });
+
+        // Définir l'option de la heatmap
+        option = {
+            tooltip: {
+                position: 'top',
+                formatter: function (params) {
+                    return `${params.data[1]} - ${params.data[0]} : ${params.data[2]} Go`;
+                }
+            },
+            grid: {
+                height: '80%',
+                top: '10%'
+            },
+            xAxis: {
+                type: 'category',
+                data: mois,
+                axisLabel: {
+                    rotate: 45,
+                    formatter: function (value) {
+                        // Optionnel : formater les labels des mois pour plus de lisibilité
+                        return value;
+                    }
+                },
+                splitArea: {
+                    show: true
+                }
+            },
+            yAxis: {
+                type: 'category',
+                data: pays,
+                splitArea: {
+                    show: true
+                }
+            },
+            visualMap: {
+                min: 0,
+                max: Math.max(...consumtion.map(item => parseFloat(item.Consommation_GB))),
+                calculable: true,
+                orient: 'horizontal',
+                left: 'center',
+                bottom: '5%',
+            },
+            series: [
+                {
+                    name: 'Consommation (GB)',
+                    type: 'heatmap',
+                    data: data,
+                    label: {
+                        show: false
+                    },
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }
+            ]
+        };
+
+        // Appliquer l'option à ECharts
+        if (option && typeof option === 'object') {
+            myChart.setOption(option);
+        }
 }
 
 // Fonction pour rendre les statistiques des clients (Treemap)
