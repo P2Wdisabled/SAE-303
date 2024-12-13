@@ -4,7 +4,7 @@
  */
 
 
-let API_URL = "https://louis-potevin.dev/api/"; // URL de base de l'API (à définir)
+let API_URL = "https://demo.louis-potevin.dev/api/"; // URL de base de l'API (à définir)
 
 
 /**
